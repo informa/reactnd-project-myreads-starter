@@ -1,3 +1,47 @@
+# Hierarchy of Components
+
+```bash
+├── App.js
+|   # - Routes "/" MyReads.js
+|   # - Routes "/search" SearchBooks.js
+└── MyReads.js
+|   # - State lives here
+|   # - Backend Server: getAll()
+|   |── Title
+|   |── Link to SearchBooks
+|   |   # - Interactive
+|   └── BookShelf.js 
+|       |── title
+|       └── Book.js 
+|
+└── SearchBooks.js
+    |── Link to MyReads
+    |   # - Interactive
+    |── input
+    |   # - Interactive
+    |   # - Calls api and filters results
+    |   # - Backend Server: search(query)
+    |── title
+    └── BookShelf.js 
+        |── title
+        └── Book.js 
+
+Reusable Components
+    └── BookShelf.js 
+    |   |── title
+    |   └── list of Book components 
+    |
+    └── Book.js 
+        |── image
+        |── title
+        |── author
+        └── BookShelfChanger.js 
+        # - Interactive
+        # - Move book to shelf or remove from shelf (none)
+        # - Callback with shelf, book
+        # - Backend Server: update(book, shelf)
+```
+
 # MyReads Project
 
 This is the starter template for the final assessment project for Udacity's React Fundamentals course. The goal of this template is to save you time by providing a static example of the CSS and HTML markup that may be used, but without any of the React code that is needed to complete the project. If you choose to start with this template, your job will be to add interactivity to the app by refactoring the static code in this template.
