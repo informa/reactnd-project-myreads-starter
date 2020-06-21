@@ -4,7 +4,20 @@ class Book extends React.Component {
   state = {};
 
   render() {
-    const { image, title, author } = this.props;
+    const { image, title, authors } = this.props;
+
+    const listOfAuthors =
+      authors &&
+      authors.map((author, i) => {
+        const numberOfAuthors = authors.length;
+        return numberOfAuthors === i + 1 ? author : `${author}, `;
+      });
+
+    const hasImage = image &&
+      image.smallThumbnail && {
+        backgroundImage: `url("${image.smallThumbnail}")`,
+      };
+
     return (
       <div className="book">
         <div className="book-top">
@@ -13,7 +26,8 @@ class Book extends React.Component {
             style={{
               width: 128,
               height: 193,
-              backgroundImage: `url("${image}")`,
+              backgroundColor: "#ebeef1",
+              ...hasImage,
             }}
           />
           <div className="book-shelf-changer">
@@ -29,7 +43,7 @@ class Book extends React.Component {
           </div>
         </div>
         <div className="book-title">{title}</div>
-        <div className="book-authors">Harper Lee</div>
+        <div className="book-authors">{listOfAuthors}</div>
       </div>
     );
   }

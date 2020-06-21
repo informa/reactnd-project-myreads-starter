@@ -1,8 +1,45 @@
 import React from "react";
 import BookShelf from "../components/BookShelf";
+import * as BooksAPI from "../BooksAPI";
 
 class SearchBooks extends React.Component {
-  state = {};
+  state = {
+    query: "",
+    books: [],
+    error: "",
+  };
+
+  updateQuery = (query) => {
+    if (query.length > 0) {
+      BooksAPI.search(query).then((books) => {
+        if (books.error) {
+          this.setState(() => ({
+            books: [],
+            error: "There is results for this search terms",
+          }));
+        } else {
+          this.setState(() => ({
+            books,
+            error: "",
+          }));
+        }
+      });
+    } else {
+      // Reset
+      this.setState(() => ({
+        books: [],
+        error: "",
+      }));
+    }
+
+    this.setState(() => ({
+      query,
+    }));
+  };
+
+  clearQuery = () => {
+    this.updateQuery("");
+  };
 
   render() {
     return (
@@ -23,11 +60,20 @@ class SearchBooks extends React.Component {
                   However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
                   you don't find a specific author or title. Every search is limited by search terms.
                 */}
-            <input type="text" placeholder="Search by title or author" />
+            <input
+              type="text"
+              placeholder="Search by title or author"
+              value={this.state.query}
+              onChange={(event) => this.updateQuery(event.target.value)}
+            />
           </div>
         </div>
         <div className="search-books-results">
-          <BookShelf />
+          {!this.state.error ? (
+            <BookShelf title="Search" books={this.state.books} />
+          ) : (
+            <p>{this.state.error}</p>
+          )}
         </div>
       </div>
     );

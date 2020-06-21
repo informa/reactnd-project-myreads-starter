@@ -11,7 +11,7 @@ const BookShelf = ({ title, books }) => {
             <li>
               <Book
                 title={title}
-                image={imageLinks.smallThumbnail}
+                image={imageLinks}
                 authors={authors}
               />
             </li>

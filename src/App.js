@@ -16,13 +16,14 @@ class BooksApp extends React.Component {
      */
     showSearchPage: false,
     books: [],
+    loading: true,
   };
 
   componentDidMount() {
     BooksAPI.getAll().then((books) => {
-      console.log(books);
       this.setState(() => ({
         books,
+        loading: false,
       }));
     });
   }
@@ -38,6 +39,8 @@ class BooksApp extends React.Component {
       <div className="app">
         {this.state.showSearchPage ? (
           <SearchBooks togglePage={this.togglePage} />
+        ) : this.state.loading ? (
+          <div>Loading</div>
         ) : (
           <MyReads
             shelves={shelves}
