@@ -1,47 +1,53 @@
 import React from "react";
 import BookShelf from "../components/BookShelf";
 import * as BooksAPI from "../BooksAPI";
+import searchTerms from "../data/searchTerms";
+import { debounce } from "lodash";
 
 class SearchBooks extends React.Component {
-  state = {
-    query: "",
-    books: [],
-    error: "",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      query: "",
+      books: [],
+      error: false,
+    };
+    this.searchDebounced = debounce(this.fetchBooks, 500);
+  }
 
-  updateQuery = (query) => {
-    if (query.length > 0) {
-      BooksAPI.search(query).then((books) => {
-        if (books.error) {
-          this.setState(() => ({
-            books: [],
-            error: "There is results for this search terms",
-          }));
-        } else {
-          this.setState(() => ({
-            books,
-            error: "",
-          }));
-        }
-      });
-    } else {
-      // Reset
-      this.setState(() => ({
-        books: [],
-        error: "",
-      }));
-    }
-
+  updateState = ({ books, error }) => {
     this.setState(() => ({
-      query,
+      books,
+      error,
     }));
   };
 
-  clearQuery = () => {
-    this.updateQuery("");
+  fetchBooks = (query) => {
+    if (query.length > 0) {
+      BooksAPI.search(query).then((books) => {
+        if (books.error) {
+          this.updateState({ books: [], error: true });
+        } else {
+          this.updateState({ books, error: false });
+        }
+      });
+    } else {
+      this.updateState({ books: [], error: false });
+    }
+  };
+
+  handleChange = (event) => {
+    const query = event.target.value;
+    this.setState({ query }, () => {
+      this.searchDebounced(this.state.query);
+    });
   };
 
   render() {
+    const { error, query, books } = this.state;
+    const showSearchTerms = query === "" || error;
+    const showBooks = books.length > 1;
+
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -63,16 +69,33 @@ class SearchBooks extends React.Component {
             <input
               type="text"
               placeholder="Search by title or author"
-              value={this.state.query}
-              onChange={(event) => this.updateQuery(event.target.value)}
+              value={query}
+              onChange={this.handleChange}
             />
           </div>
         </div>
         <div className="search-books-results">
-          {!this.state.error ? (
-            <BookShelf title="Search" books={this.state.books} />
-          ) : (
-            <p>{this.state.error}</p>
+          {error && (
+            <p>
+              There is no results for this search term: <strong>{query}</strong>
+            </p>
+          )}
+          {showSearchTerms && (
+            <div>
+              <p>Try one of these predefined search terms:</p>
+              <ul style={{ columnCount: 5 }}>
+                {searchTerms.map((term) => (
+                  <li>{term}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {showBooks && (
+            <BookShelf
+              numberOfResults={books.length}
+              title={`Search by: ${query}`}
+              books={books}
+            />
           )}
         </div>
       </div>
