@@ -8,45 +8,77 @@ class SearchBooks extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      query: "",
+      searchTerm: "",
       books: [],
       error: false,
+      loading: false,
     };
-    this.searchDebounced = debounce(this.fetchBooks, 500);
+
+    // Don't call the api on every change, wait until user is finished typing
+    this.debouncedFetch = debounce(this.fetchBooks, 1000);
   }
 
-  updateState = ({ books, error }) => {
-    this.setState(() => ({
-      books,
-      error,
-    }));
-  };
-
-  fetchBooks = (query) => {
-    if (query.length > 0) {
-      BooksAPI.search(query).then((books) => {
+  fetchBooks = (searchTerm) => {
+    if (searchTerm !== "") {
+      BooksAPI.search(searchTerm).then((books) => {
         if (books.error) {
-          this.updateState({ books: [], error: true });
+          this.setState({ error: true });
         } else {
-          this.updateState({ books, error: false });
+          this.setState({ books });
         }
       });
-    } else {
-      this.updateState({ books: [], error: false });
     }
-  };
-
-  handleChange = (event) => {
-    const query = event.target.value;
-    this.setState({ query }, () => {
-      this.searchDebounced(this.state.query);
+    this.setState({
+      loading: false,
     });
   };
 
+  handleSearch = (event) => {
+    const searchTerm = event.target.value;
+
+    // onChange set searchTerm and clear out other state
+    this.setState({ searchTerm, books: [], error: false, loading: true });
+    this.debouncedFetch(searchTerm);
+  };
+
+  renderSearchTerms = (
+    <div>
+      <p>Try one of these predefined search terms:</p>
+      <ul style={{ columnCount: 5 }}>
+        {searchTerms.map((term) => (
+          <li>{term}</li>
+        ))}
+      </ul>
+    </div>
+  );
+
+  renderErrorMessage = (searchTerm) => (
+    <p>
+      There is no results for this search term: <strong>{searchTerm}</strong>
+    </p>
+  );
+
+  renderContent = () => {
+    const { error, searchTerm, books } = this.state;
+    const showSearchTerms = searchTerm === "" || error;
+
+    return (
+      <div>
+        {error && this.renderErrorMessage(searchTerm)}
+        {showSearchTerms && this.renderSearchTerms}
+        {books.length > 0 && (
+          <BookShelf
+            numberOfResults={books.length}
+            title={`Search by: ${searchTerm}`}
+            books={books}
+          />
+        )}
+      </div>
+    );
+  };
+
   render() {
-    const { error, query, books } = this.state;
-    const showSearchTerms = query === "" || error;
-    const showBooks = books.length > 1;
+    const { searchTerm, loading } = this.state;
 
     return (
       <div className="search-books">
@@ -69,33 +101,18 @@ class SearchBooks extends React.Component {
             <input
               type="text"
               placeholder="Search by title or author"
-              value={query}
-              onChange={this.handleChange}
+              value={searchTerm}
+              onChange={this.handleSearch}
             />
           </div>
         </div>
         <div className="search-books-results">
-          {error && (
-            <p>
-              There is no results for this search term: <strong>{query}</strong>
-            </p>
-          )}
-          {showSearchTerms && (
-            <div>
-              <p>Try one of these predefined search terms:</p>
-              <ul style={{ columnCount: 5 }}>
-                {searchTerms.map((term) => (
-                  <li>{term}</li>
-                ))}
-              </ul>
+          {loading ? (
+            <div className="loading">
+              <p className="loader">Loading search results</p>
             </div>
-          )}
-          {showBooks && (
-            <BookShelf
-              numberOfResults={books.length}
-              title={`Search by: ${query}`}
-              books={books}
-            />
+          ) : (
+            this.renderContent()
           )}
         </div>
       </div>
