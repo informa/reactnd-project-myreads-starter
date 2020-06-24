@@ -4,7 +4,11 @@ import "./App.css";
 import MyReads from "./views/MyReads";
 import SearchBooks from "./views/SearchBooks";
 
-const shelves = ["currentlyReading", "wantToRead", "read"];
+const shelves = {
+  currentlyReading: "Currently Reading",
+  wantToRead: "Want to Read",
+  read: "Read",
+};
 
 class BooksApp extends React.Component {
   state = {
@@ -34,11 +38,24 @@ class BooksApp extends React.Component {
     }));
   };
 
+  handleUpdateShelf = (book) => {
+    const { books } = this.state;
+    const newBooks = books.filter((item) => item.title !== book.title);
+
+    this.setState(() => ({
+      books: [...newBooks, book],
+    }));
+  };
+
   render() {
     return (
       <div className="app">
         {this.state.showSearchPage ? (
-          <SearchBooks togglePage={this.togglePage} />
+          <SearchBooks
+            shelves={shelves}
+            updateShelves={this.handleUpdateShelf}
+            togglePage={this.togglePage}
+          />
         ) : this.state.loading ? (
           <div>Loading</div>
         ) : (
@@ -46,6 +63,7 @@ class BooksApp extends React.Component {
             shelves={shelves}
             myBooks={this.state.books}
             togglePage={this.togglePage}
+            updateShelves={this.handleUpdateShelf}
           />
         )}
       </div>

@@ -1,21 +1,42 @@
 import React from "react";
 
 class Book extends React.Component {
-  state = {};
+  state = { selectedOption: this.props.shelf };
 
-  render() {
-    const { image, title, authors } = this.props;
+  renderAuthors = () => {
+    const { authors } = this.props;
 
-    const listOfAuthors =
+    return (
       authors &&
       authors.map((author, i) => {
         const numberOfAuthors = authors.length;
         return numberOfAuthors === i + 1 ? author : `${author}, `;
-      });
+      })
+    );
+  };
 
-    const hasImage = image &&
-      image.smallThumbnail && {
-        backgroundImage: `url("${image.smallThumbnail}")`,
+  renderOptions = () => {
+    const { shelves } = this.props;
+
+    return Object.keys(shelves).map((shelf) => (
+      <option value={shelf}>{shelves[shelf]}</option>
+    ));
+  };
+
+  handleChange = (shelf) => {
+    const { title, authors, imageLinks, updateShelves } = this.props;
+
+    this.setState(() => ({ selectedOption: shelf }));
+    updateShelves({ title, authors, imageLinks, shelf });
+  };
+
+  render() {
+    const { imageLinks, title } = this.props;
+    const { selectedOption } = this.state;
+
+    const hasImage = imageLinks &&
+      imageLinks.smallThumbnail && {
+        backgroundImage: `url("${imageLinks.smallThumbnail}")`,
       };
 
     return (
@@ -31,19 +52,20 @@ class Book extends React.Component {
             }}
           />
           <div className="book-shelf-changer">
-            <select>
+            <select
+              value={selectedOption}
+              onChange={(event) => this.handleChange(event.target.value)}
+            >
               <option value="move" disabled>
                 Move to...
               </option>
-              <option value="currentlyReading">Currently Reading</option>
-              <option value="wantToRead">Want to Read</option>
-              <option value="read">Read</option>
+              {this.renderOptions()}
               <option value="none">None</option>
             </select>
           </div>
         </div>
         <div className="book-title">{title}</div>
-        <div className="book-authors">{listOfAuthors}</div>
+        <div className="book-authors">{this.renderAuthors()}</div>
       </div>
     );
   }

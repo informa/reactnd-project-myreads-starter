@@ -71,6 +71,8 @@ class SearchBooks extends React.Component {
             numberOfResults={books.length}
             title={`Search by: ${searchTerm}`}
             books={books}
+            shelves={this.props.shelves}
+            updateShelves={this.props.updateShelves}
           />
         )}
       </div>
