@@ -1,14 +1,8 @@
 import React from "react";
 import * as BooksAPI from "./BooksAPI";
+import BookShelves from "./components/BookShelves";
+import BooksSearch from "./components/BooksSearch";
 import "./App.css";
-import MyReads from "./views/MyReads";
-import SearchBooks from "./views/SearchBooks";
-
-const shelves = {
-  currentlyReading: "Currently Reading",
-  wantToRead: "Want to Read",
-  read: "Read",
-};
 
 class BooksApp extends React.Component {
   state = {
@@ -25,11 +19,16 @@ class BooksApp extends React.Component {
 
   componentDidMount() {
     BooksAPI.getAll().then((books) => {
+      console.log(books);
       this.setState(() => ({
         books,
         loading: false,
       }));
     });
+  }
+
+  componentDidUpdate() {
+    console.log(this.state.books);
   }
 
   togglePage = (toggle) => {
@@ -51,16 +50,15 @@ class BooksApp extends React.Component {
     return (
       <div className="app">
         {this.state.showSearchPage ? (
-          <SearchBooks
-            shelves={shelves}
+          <BooksSearch
             updateShelves={this.handleUpdateShelf}
             togglePage={this.togglePage}
+            myBooks={this.state.books}
           />
         ) : this.state.loading ? (
           <div>Loading</div>
         ) : (
-          <MyReads
-            shelves={shelves}
+          <BookShelves
             myBooks={this.state.books}
             togglePage={this.togglePage}
             updateShelves={this.handleUpdateShelf}

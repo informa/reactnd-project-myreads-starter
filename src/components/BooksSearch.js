@@ -1,10 +1,10 @@
 import React from "react";
-import BookShelf from "../components/BookShelf";
-import * as BooksAPI from "../BooksAPI";
-import searchTerms from "../data/searchTerms";
 import { debounce } from "lodash";
+import BookShelf from "./BookShelf";
+import searchTerms from "../data/searchTerms";
+import * as BooksAPI from "../BooksAPI";
 
-class SearchBooks extends React.Component {
+class BookSearch extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -69,10 +69,10 @@ class SearchBooks extends React.Component {
         {books.length > 0 && (
           <BookShelf
             numberOfResults={books.length}
-            title={`Search by: ${searchTerm}`}
+            shelfTitle={`Search by: ${searchTerm}`}
             books={books}
-            shelves={this.props.shelves}
             updateShelves={this.props.updateShelves}
+            myBooks={this.props.myBooks}
           />
         )}
       </div>
@@ -122,4 +122,4 @@ class SearchBooks extends React.Component {
   }
 }
 
-export default SearchBooks;
+export default BookSearch;

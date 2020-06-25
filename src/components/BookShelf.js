@@ -2,12 +2,11 @@ import React from "react";
 import Book from "./Book";
 
 const BookShelf = ({
-  shelves,
-  shelf,
   shelfTitle,
   books,
   numberOfResults,
   updateShelves,
+  myBooks,
 }) => {
   return (
     <div className="bookshelf">
@@ -17,18 +16,24 @@ const BookShelf = ({
       </div>
       <div className="bookshelf-books">
         <ol className="books-grid">
-          {books.map(({ title, authors, imageLinks }) => (
-            <li>
-              <Book
-                shelf={shelf}
-                shelves={shelves}
-                title={title}
-                imageLinks={imageLinks}
-                authors={authors}
-                updateShelves={updateShelves}
-              />
-            </li>
-          ))}
+          {books.map(({ id, title, authors, imageLinks }) => {
+            const matchBookToShelf = myBooks.filter(
+              (book) => book.id === id
+            )[0];
+
+            return (
+              <li>
+                <Book
+                  id={id}
+                  shelf={matchBookToShelf ? matchBookToShelf.shelf : "none"}
+                  title={title}
+                  imageLinks={imageLinks}
+                  authors={authors}
+                  updateShelves={updateShelves}
+                />
+              </li>
+            );
+          })}
         </ol>
       </div>
     </div>
