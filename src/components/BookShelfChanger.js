@@ -2,8 +2,8 @@ import React from "react";
 import shelves from "../data/shelves";
 
 const BookShelfChanger = ({ shelf, handleChange }) => {
-  const renderOptions = Object.keys(shelves).map((shelf) => (
-    <option value={shelf}>{shelves[shelf]}</option>
+  const renderOptions = shelves.map(({ shelf, title }) => (
+    <option value={shelf}>{title}</option>
   ));
 
   return (

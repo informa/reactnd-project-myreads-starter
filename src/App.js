@@ -2,6 +2,7 @@ import React from "react";
 import * as BooksAPI from "./BooksAPI";
 import BookShelves from "./components/BookShelves";
 import BooksSearch from "./components/BooksSearch";
+import Loader from "./components/Loader";
 import "./App.css";
 
 class BooksApp extends React.Component {
@@ -18,6 +19,10 @@ class BooksApp extends React.Component {
   };
 
   componentDidMount() {
+    this.fetchMyBooks();
+  }
+
+  fetchMyBooks = () => {
     BooksAPI.getAll().then((books) => {
       console.log(books);
       this.setState(() => ({
@@ -25,10 +30,17 @@ class BooksApp extends React.Component {
         loading: false,
       }));
     });
-  }
+  };
+
+  updateMyBooks = (book) => {
+    BooksAPI.update(book, book.shelf).then((response) => {
+      console.log(response);
+      this.fetchMyBooks();
+    });
+  };
 
   componentDidUpdate() {
-    console.log(this.state.books);
+    // console.log(this.state.books);
   }
 
   togglePage = (toggle) => {
@@ -39,11 +51,15 @@ class BooksApp extends React.Component {
 
   handleUpdateShelf = (book) => {
     const { books } = this.state;
-    const newBooks = books.filter((item) => item.title !== book.title);
+    let newBooks = [...books];
+    newBooks = books.filter((item) => item.id !== book.id);
 
-    this.setState(() => ({
-      books: [...newBooks, book],
-    }));
+    this.updateMyBooks(book);
+    this.setState(
+      () => ({
+        books: [...newBooks, book],
+      }),
+    );
   };
 
   render() {
@@ -56,7 +72,7 @@ class BooksApp extends React.Component {
             myBooks={this.state.books}
           />
         ) : this.state.loading ? (
-          <div>Loading</div>
+          <Loader message="Loading My Reads App" />
         ) : (
           <BookShelves
             myBooks={this.state.books}

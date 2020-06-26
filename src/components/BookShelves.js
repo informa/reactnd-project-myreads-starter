@@ -3,15 +3,14 @@ import BookShelf from "./BookShelf";
 import shelves from "../data/shelves";
 
 const BookShelves = ({ myBooks, updateShelves, togglePage }) => {
-  //TODO: not sure about this.
-  const myShelves = Object.keys(shelves);
-
-  const renderShelves = myShelves.map((shelf) => {
+  
+  const renderShelves = shelves.map(({ shelf, title }) => {
     const books = myBooks.filter((book) => book.shelf === shelf);
+
     return (
       <BookShelf
         myBooks={myBooks}
-        shelfTitle={shelves[shelf]}
+        shelfTitle={title}
         books={books}
         updateShelves={updateShelves}
         numberOfResults={books.length}

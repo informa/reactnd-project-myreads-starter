@@ -1,6 +1,7 @@
 import React from "react";
 import { debounce } from "lodash";
 import BookShelf from "./BookShelf";
+import Loader from "./Loader";
 import searchTerms from "../data/searchTerms";
 import * as BooksAPI from "../BooksAPI";
 
@@ -18,24 +19,33 @@ class BookSearch extends React.Component {
     this.debouncedFetch = debounce(this.fetchBooks, 1000);
   }
 
+  componentDidMount() {
+    this.searchInput.focus();
+  }
+
   fetchBooks = (searchTerm) => {
-    if (searchTerm !== "") {
-      BooksAPI.search(searchTerm).then((books) => {
+    const refinedSearchTerm = searchTerm.toLowerCase().trim();
+    const termMatchesSearchTerm = searchTerms.indexOf(refinedSearchTerm) >= 0;
+
+    // Call api if term matches defined search terms
+    if (searchTerm !== "" && termMatchesSearchTerm) {
+      BooksAPI.search(refinedSearchTerm).then((books) => {
         if (books.error) {
           this.setState({ error: true });
         } else {
           this.setState({ books });
         }
       });
+    } else {
+      this.setState({ error: true });
     }
+
     this.setState({
       loading: false,
     });
   };
 
-  handleSearch = (event) => {
-    const searchTerm = event.target.value;
-
+  handleSearch = (searchTerm) => {
     // onChange set searchTerm and clear out other state
     this.setState({ searchTerm, books: [], error: false, loading: true });
     this.debouncedFetch(searchTerm);
@@ -44,7 +54,7 @@ class BookSearch extends React.Component {
   renderSearchTerms = (
     <div>
       <p>Try one of these predefined search terms:</p>
-      <ul style={{ columnCount: 5 }}>
+      <ul style={{ columnCount: 5, color: "#999999" }}>
         {searchTerms.map((term) => (
           <li>{term}</li>
         ))}
@@ -104,15 +114,16 @@ class BookSearch extends React.Component {
               type="text"
               placeholder="Search by title or author"
               value={searchTerm}
-              onChange={this.handleSearch}
+              onChange={(event) => this.handleSearch(event.target.value)}
+              ref={(input) => {
+                this.searchInput = input;
+              }}
             />
           </div>
         </div>
         <div className="search-books-results">
           {loading ? (
-            <div className="loading">
-              <p className="loader">Loading search results</p>
-            </div>
+            <Loader message="Loading search results" />
           ) : (
             this.renderContent()
           )}

@@ -17,9 +17,10 @@ const BookShelf = ({
       <div className="bookshelf-books">
         <ol className="books-grid">
           {books.map(({ id, title, authors, imageLinks }) => {
-            const matchBookToShelf = myBooks.filter(
-              (book) => book.id === id
-            )[0];
+            
+            //TODO: make this better? 
+            const matchBookToShelf = myBooks
+              .filter((book) => book.id === id)[0];
 
             return (
               <li>
