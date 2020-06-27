@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import BookShelfChanger from "./BookShelfChanger";
 
 const Book = ({ id, shelf, title, authors, imageLinks, updateShelves }) => {
@@ -38,6 +39,23 @@ const Book = ({ id, shelf, title, authors, imageLinks, updateShelves }) => {
       <div className="book-authors">{renderAuthors}</div>
     </div>
   );
+};
+
+Book.propTypes = {
+  id: PropTypes.string.isRequired,
+  shelf: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  authors: PropTypes.array,
+  imageLinks: PropTypes.PropTypes.shape({
+    smallThumbnail: PropTypes.string,
+    thumbnail: PropTypes.string,
+  }),
+  updateShelves: PropTypes.func.isRequired,
+};
+
+Book.defaultProps = {
+  imageLinks: undefined,
+  authors: undefined,
 };
 
 export default Book;

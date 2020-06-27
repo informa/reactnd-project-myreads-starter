@@ -1,14 +1,15 @@
 import React from "react";
+import PropTypes from "prop-types";
 import BookShelf from "./BookShelf";
 import shelves from "../data/shelves";
 
-const BookShelves = ({ myBooks, updateShelves, togglePage }) => {
-  
+const BookShelves = ({ myBooks, updateShelves, history }) => {
   const renderShelves = shelves.map(({ shelf, title }) => {
     const books = myBooks.filter((book) => book.shelf === shelf);
 
     return (
       <BookShelf
+        key={shelf}
         myBooks={myBooks}
         shelfTitle={title}
         books={books}
@@ -25,10 +26,18 @@ const BookShelves = ({ myBooks, updateShelves, togglePage }) => {
       </div>
       <div className="list-books-content">{renderShelves}</div>
       <div className="open-search">
-        <button onClick={() => togglePage(true)}>Add a book</button>
+        <button onClick={() => history.push("/search")}>Add a book</button>
       </div>
     </div>
   );
+};
+
+BookShelves.propTypes = {
+  myBooks: PropTypes.array.isRequired,
+  updateShelves: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 export default BookShelves;

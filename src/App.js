@@ -1,4 +1,5 @@
 import React from "react";
+import { Route } from "react-router-dom";
 import * as BooksAPI from "./BooksAPI";
 import BookShelves from "./components/BookShelves";
 import BooksSearch from "./components/BooksSearch";
@@ -7,15 +8,9 @@ import "./App.css";
 
 class BooksApp extends React.Component {
   state = {
-    /**
-     * TODO: Instead of using this state variable to keep track of which page
-     * we're on, use the URL in the browser's address bar. This will ensure that
-     * users can use the browser's back and forward buttons to navigate between
-     * pages, as well as provide a good URL they can bookmark and share.
-     */
-    showSearchPage: false,
     books: [],
     loading: true,
+    notifications: [],
   };
 
   componentDidMount() {
@@ -24,7 +19,6 @@ class BooksApp extends React.Component {
 
   fetchMyBooks = () => {
     BooksAPI.getAll().then((books) => {
-      console.log(books);
       this.setState(() => ({
         books,
         loading: false,
@@ -32,54 +26,47 @@ class BooksApp extends React.Component {
     });
   };
 
-  updateMyBooks = (book) => {
-    BooksAPI.update(book, book.shelf).then((response) => {
-      console.log(response);
-      this.fetchMyBooks();
-    });
-  };
-
-  componentDidUpdate() {
-    // console.log(this.state.books);
-  }
-
-  togglePage = (toggle) => {
-    this.setState(() => ({
-      showSearchPage: toggle,
-    }));
-  };
-
   handleUpdateShelf = (book) => {
     const { books } = this.state;
     let newBooks = [...books];
     newBooks = books.filter((item) => item.id !== book.id);
 
-    this.updateMyBooks(book);
-    this.setState(
-      () => ({
+    BooksAPI.update(book, book.shelf).then((response) => {
+      this.setState(() => ({
         books: [...newBooks, book],
-      }),
-    );
+      }));
+    });
   };
 
   render() {
+    const { books, loading } = this.state;
     return (
       <div className="app">
-        {this.state.showSearchPage ? (
-          <BooksSearch
-            updateShelves={this.handleUpdateShelf}
-            togglePage={this.togglePage}
-            myBooks={this.state.books}
-          />
-        ) : this.state.loading ? (
-          <Loader message="Loading My Reads App" />
-        ) : (
-          <BookShelves
-            myBooks={this.state.books}
-            togglePage={this.togglePage}
-            updateShelves={this.handleUpdateShelf}
-          />
-        )}
+        <Route
+          exact
+          path="/"
+          render={({ history }) =>
+            loading ? (
+              <Loader message="Loading My Reads App" />
+            ) : (
+              <BookShelves
+                myBooks={books}
+                updateShelves={this.handleUpdateShelf}
+                history={history}
+              />
+            )
+          }
+        />
+        <Route
+          path="/search"
+          render={({ history }) => (
+            <BooksSearch
+              myBooks={books}
+              updateShelves={this.handleUpdateShelf}
+              history={history}
+            />
+          )}
+        />
       </div>
     );
   }

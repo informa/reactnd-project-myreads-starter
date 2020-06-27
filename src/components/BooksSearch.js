@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { debounce } from "lodash";
 import BookShelf from "./BookShelf";
 import Loader from "./Loader";
@@ -6,6 +7,14 @@ import searchTerms from "../data/searchTerms";
 import * as BooksAPI from "../BooksAPI";
 
 class BookSearch extends React.Component {
+  static propTypes = {
+    myBooks: PropTypes.array.isRequired,
+    updateShelves: PropTypes.func.isRequired,
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }).isRequired,
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -56,7 +65,7 @@ class BookSearch extends React.Component {
       <p>Try one of these predefined search terms:</p>
       <ul style={{ columnCount: 5, color: "#999999" }}>
         {searchTerms.map((term) => (
-          <li>{term}</li>
+          <li key={term}>{term}</li>
         ))}
       </ul>
     </div>
@@ -70,7 +79,12 @@ class BookSearch extends React.Component {
 
   renderContent = () => {
     const { error, searchTerm, books } = this.state;
+    const { updateShelves, myBooks } = this.props;
     const showSearchTerms = searchTerm === "" || error;
+
+    // Error if: search term is not equal to searchTerms, empty search, error with api results
+    // Display search terms to help navigate UX if error or empty search
+    // Display books if search term is equal to searchTerms and there are results from api call.
 
     return (
       <div>
@@ -81,8 +95,8 @@ class BookSearch extends React.Component {
             numberOfResults={books.length}
             shelfTitle={`Search by: ${searchTerm}`}
             books={books}
-            updateShelves={this.props.updateShelves}
-            myBooks={this.props.myBooks}
+            updateShelves={updateShelves}
+            myBooks={myBooks}
           />
         )}
       </div>
@@ -91,25 +105,16 @@ class BookSearch extends React.Component {
 
   render() {
     const { searchTerm, loading } = this.state;
+    const { history } = this.props;
 
     return (
       <div className="search-books">
         <div className="search-books-bar">
-          <button
-            className="close-search"
-            onClick={() => this.props.togglePage(false)}
-          >
+          <button className="close-search" onClick={() => history.push("/")}>
             Close
           </button>
-          <div className="search-books-input-wrapper">
-            {/*
-                  NOTES: The search from BooksAPI is limited to a particular set of search terms.
-                  You can find these search terms here:
-                  https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
 
-                  However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-                  you don't find a specific author or title. Every search is limited by search terms.
-                */}
+          <div className="search-books-input-wrapper">
             <input
               type="text"
               placeholder="Search by title or author"

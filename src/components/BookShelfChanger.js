@@ -1,9 +1,12 @@
 import React from "react";
+import PropTypes from "prop-types";
 import shelves from "../data/shelves";
 
 const BookShelfChanger = ({ shelf, handleChange }) => {
   const renderOptions = shelves.map(({ shelf, title }) => (
-    <option value={shelf}>{title}</option>
+    <option key={shelf} value={shelf}>
+      {title}
+    </option>
   ));
 
   return (
@@ -18,6 +21,11 @@ const BookShelfChanger = ({ shelf, handleChange }) => {
       <option value="none">None</option>
     </select>
   );
+};
+
+BookShelfChanger.propTypes = {
+  shelf: PropTypes.string.isRequired,
+  handleChange: PropTypes.func.isRequired,
 };
 
 export default BookShelfChanger;
