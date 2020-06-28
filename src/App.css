@@ -267,12 +267,3 @@ button:active {
   border-color: blue;
   color: blue;
 }
-
-.notifications {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  width: 200px;
-  background: yellow;
-  z-index: 6;
-}

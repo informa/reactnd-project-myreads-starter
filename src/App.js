@@ -10,7 +10,6 @@ class BooksApp extends React.Component {
   state = {
     books: [],
     loading: true,
-    notifications: [],
   };
 
   componentDidMount() {
