@@ -8,7 +8,7 @@ The App.js handles the flow of data in the app.
 - After the update, the App updates state of the books, and sends the new data to the other components.
 
 ### Category names
-I Added a helper data file `shelves.js`, which holds the shelf category names. I used this in BookShelves.js map over shelves, contruct the select options in the BookShelfChanger, and shelf name in the Book.js. I decided to add this if shelves change name it can be easily updated in one place.
+I Added a helper data file `shelves.js`, which holds the shelf category names. I used this in BookShelves.js map over shelves, construct the select options in the BookShelfChanger, and shelf name in the Book.js. I decided to add this if shelves change names it can be easily updated in one place.
 
 ## Hierarchy of Components
 ```bash
@@ -30,7 +30,7 @@ I Added a helper data file `shelves.js`, which holds the shelf category names. I
 ## Components
 
 ### BookShelves
-Maps over the shelves to display `<BookShelf />.
+Maps over the shelves to display `<BookShelf />`.
 
 ### BookShelf
 Maps over the books to display `<Book />`
@@ -52,7 +52,7 @@ Assumptions made
 - Decided to make full search terms call the api rather than partial search terms as this is a search rather than filter
 - Added error state if search is empty or term not matching search term
 - Added visual indicator when changing book shelf from the search page
-
+- Added search terms to help navigate UX if error or empty search
 
 ## Usage
 
